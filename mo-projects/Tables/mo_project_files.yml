@@ -1,0 +1,44 @@
+table: mo_project_files
+engine: InnoDB
+comment: Archivos almacenados asociados a proyectos.
+columns:
+  - name: id
+    type: INT
+    unsigned: true
+    autoincrement: true
+    primary: true
+  - name: idproject
+    type: INT
+    unsigned: true
+    notnull: true
+  - name: filename
+    type: VARCHAR
+    length: 255
+    notnull: true
+  - name: filepath
+    type: VARCHAR
+    length: 255
+    notnull: true
+  - name: filesize
+    type: INT
+    unsigned: true
+    notnull: true
+    default: 0
+  - name: mimetype
+    type: VARCHAR
+    length: 100
+    null: true
+  - name: uploaded_at
+    type: DATETIME
+    notnull: true
+    default: CURRENT_TIMESTAMP
+indexes:
+  - name: idx_mo_project_files_project
+    type: index
+    columns: [idproject]
+foreign_keys:
+  - name: fk_mo_project_files_project
+    columns: [idproject]
+    referenced_table: mo_projects
+    referenced_columns: [id]
+    on_delete: CASCADE

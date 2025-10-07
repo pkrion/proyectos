@@ -1,0 +1,49 @@
+table: mo_project_events
+engine: InnoDB
+comment: Eventos y citas vinculados a proyectos para sincronización con calendarios.
+columns:
+  - name: id
+    type: INT
+    unsigned: true
+    autoincrement: true
+    primary: true
+  - name: idproject
+    type: INT
+    unsigned: true
+    notnull: true
+  - name: calendar_event_id
+    type: VARCHAR
+    length: 128
+    null: true
+  - name: title
+    type: VARCHAR
+    length: 255
+    notnull: true
+  - name: start_at
+    type: DATETIME
+    notnull: true
+  - name: end_at
+    type: DATETIME
+    null: true
+  - name: location
+    type: VARCHAR
+    length: 255
+    null: true
+  - name: notes
+    type: TEXT
+    null: true
+  - name: synced
+    type: TINYINT
+    unsigned: true
+    notnull: true
+    default: 0
+indexes:
+  - name: idx_mo_project_events_project
+    type: index
+    columns: [idproject]
+foreign_keys:
+  - name: fk_mo_project_events_project
+    columns: [idproject]
+    referenced_table: mo_projects
+    referenced_columns: [id]
+    on_delete: CASCADE
