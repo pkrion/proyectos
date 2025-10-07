@@ -1,0 +1,267 @@
+{% extends "Master/Base.html.twig" %}
+
+{% block css %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('Assets/css/mo-projects.css', 'mo-projects') }}" />
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+    <script src="{{ asset('Assets/js/mo-kanban.js', 'mo-projects') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-3">
+    <div class="d-flex align-items-center mb-3">
+        <h1 class="h3 mb-0 text-uppercase">{{ i18n.trans('mo-projects') }} · {{ view.model.name }}</h1>
+        <div class="ms-auto d-flex gap-2">
+            {% if view.model.drive_folder_url %}
+                <a class="btn btn-outline-primary" href="{{ view.model.drive_folder_url }}" target="_blank" rel="noopener">
+                    <i class="fab fa-google-drive"></i> {{ i18n.trans('mo-drive-open') }}
+                </a>
+            {% endif %}
+            {% if view.model.calendar_id %}
+                <button class="btn btn-outline-secondary" type="button" data-action="sync-calendar">
+                    <i class="far fa-calendar-check"></i> {{ i18n.trans('mo-sync-calendar') }}
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#mo-tab-general" type="button" role="tab">{{ i18n.trans('general') }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#mo-tab-docs" type="button" role="tab">{{ i18n.trans('documentos') }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#mo-tab-credentials" type="button" role="tab">{{ i18n.trans('credenciales') }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#mo-tab-files" type="button" role="tab">{{ i18n.trans('archivos') }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#mo-tab-kanban" type="button" role="tab">{{ i18n.trans('kanban') }}</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#mo-tab-calendar" type="button" role="tab">{{ i18n.trans('calendario') }}</button>
+        </li>
+    </ul>
+
+    <div class="tab-content border border-top-0 bg-white p-4 rounded-bottom shadow-sm">
+        <div class="tab-pane fade show active" id="mo-tab-general" role="tabpanel">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    {{ forms.input('code', view.model.code, 'Código', { required: true }) }}
+                </div>
+                <div class="col-md-8">
+                    {{ forms.input('name', view.model.name, 'Nombre del proyecto', { required: true }) }}
+                </div>
+                <div class="col-md-4">
+                    {{ forms.select('idclient', clientes, view.model.idclient, 'Cliente vinculado', { allowClear: true }) }}
+                </div>
+                <div class="col-md-4">
+                    {{ forms.select('status', {
+                        'activo': 'Activo',
+                        'en-curso': 'En curso',
+                        'en-espera': 'En espera',
+                        'cerrado': 'Cerrado'
+                    }, view.model.status, 'Estado') }}
+                </div>
+                <div class="col-md-2">
+                    {{ forms.date('startdate', view.model.startdate, 'Inicio') }}
+                </div>
+                <div class="col-md-2">
+                    {{ forms.date('enddate', view.model.enddate, 'Entrega') }}
+                </div>
+                <div class="col-12">
+                    {{ forms.textarea('description', view.model.description, 'Descripción y notas', { rows: 4 }) }}
+                </div>
+                <div class="col-md-6">
+                    {{ forms.input('drive_folder_url', view.model.drive_folder_url, 'Carpeta de Google Drive') }}
+                </div>
+                <div class="col-md-6">
+                    {{ forms.input('calendar_id', view.model.calendar_id, 'ID de calendario de Google') }}
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="mo-tab-docs" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>{{ i18n.trans('documento') }}</th>
+                            <th>{{ i18n.trans('tipo') }}</th>
+                            <th>{{ i18n.trans('cliente') }}</th>
+                            <th>{{ i18n.trans('total') }}</th>
+                            <th>{{ i18n.trans('fecha') }}</th>
+                            <th class="text-end">{{ i18n.trans('acciones') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in documents %}
+                        <tr>
+                            <td>{{ item.document.codigo ?? item.link.iddocument }}</td>
+                            <td class="text-capitalize">{{ item.link.doctype }}</td>
+                            <td>{{ item.document.nombrecliente ?? '' }}</td>
+                            <td>{{ item.document.total ?? '-' }}</td>
+                            <td>{{ item.document.fecha ?? '-' }}</td>
+                            <td class="text-end">
+                                {% if item.url %}
+                                <a class="btn btn-sm btn-outline-primary" href="{{ url(item.url) }}">
+                                    <i class="far fa-eye"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="6" class="text-center text-muted">{{ i18n.trans('mo-projects-no-documents') }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="mo-tab-credentials" role="tabpanel">
+            <div class="mo-credentials-list">
+                {% for credential in view.model.getCredentials() %}
+                <article class="mo-credential-card">
+                    <header class="d-flex align-items-center gap-2">
+                        <h3 class="h6 mb-0">{{ credential.title }}</h3>
+                        {% if credential.is_sensitive %}
+                            <span class="badge bg-danger text-uppercase">{{ i18n.trans('sensibles') }}</span>
+                        {% endif %}
+                    </header>
+                    <dl class="row small mt-3 mb-0">
+                        {% if credential.username %}
+                        <dt class="col-sm-3 text-muted">{{ i18n.trans('usuario') }}</dt>
+                        <dd class="col-sm-9">{{ credential.username }}</dd>
+                        {% endif %}
+                        {% if credential.password %}
+                        <dt class="col-sm-3 text-muted">{{ i18n.trans('clave') }}</dt>
+                        <dd class="col-sm-9">••••••••</dd>
+                        {% endif %}
+                        {% if credential.notes %}
+                        <dt class="col-sm-3 text-muted">{{ i18n.trans('notas') }}</dt>
+                        <dd class="col-sm-9">{{ credential.notes }}</dd>
+                        {% endif %}
+                    </dl>
+                    <div class="mo-credential-card__actions">
+                        {% if credential.username %}
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-copy="{{ credential.username }}" data-label="{{ i18n.trans('copiar-usuario') }}" data-copied-label="{{ i18n.trans('copiado') }}">
+                            <i class="far fa-copy"></i> {{ i18n.trans('copiar-usuario') }}
+                        </button>
+                        {% endif %}
+                        {% if credential.password %}
+                        <button type="button" class="btn btn-outline-secondary btn-sm" data-copy="{{ credential.password }}" data-label="{{ i18n.trans('copiar-clave') }}" data-copied-label="{{ i18n.trans('copiado') }}">
+                            <i class="far fa-copy"></i> {{ i18n.trans('copiar-clave') }}
+                        </button>
+                        {% endif %}
+                    </div>
+                </article>
+                {% else %}
+                <p class="text-muted">{{ i18n.trans('mo-projects-no-credentials') }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="mo-tab-files" role="tabpanel">
+            <div class="alert alert-info">
+                <i class="far fa-cloud-upload-alt"></i> {{ i18n.trans('mo-projects-upload-hint') }}
+            </div>
+            <div class="row g-3">
+                {% for file in view.model.getFiles() %}
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title text-truncate">{{ file.filename }}</h5>
+                            <p class="card-text text-muted small mb-1">{{ file.mimetype ?? 'archivo' }}</p>
+                            <p class="card-text text-muted small">{{ file.filesize|number_format }} bytes</p>
+                            <a href="{{ url('DownloadFile', {'path': file.filepath}) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="far fa-download"></i> {{ i18n.trans('descargar') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-muted">{{ i18n.trans('mo-projects-no-files') }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="mo-tab-kanban" role="tabpanel">
+            <div class="mo-kanban-board" data-mo-kanban data-api="{{ kanbanEndpoint|default('') }}">
+                {% for columnId, columnData in kanbanColumns %}
+                {% set column = columnData.column %}
+                <section class="mo-kanban-column" data-mo-column="{{ column.id }}">
+                    <header class="mo-kanban-column__header">
+                        <h3 class="h6 mb-0">{{ column.name }}</h3>
+                        <span class="mo-kanban-column__badge" style="background: {{ column.color }};">
+                            {{ columnData.tasks|length }}
+                        </span>
+                    </header>
+                    <div class="mo-kanban-tasks" data-mo-task-list>
+                        {% for task in columnData.tasks %}
+                        <article class="mo-kanban-task" data-mo-task="{{ task.id }}">
+                            <div class="mo-kanban-task__title">{{ task.title }}</div>
+                            {% if task.description %}
+                            <p class="small text-muted mb-2">{{ task.description }}</p>
+                            {% endif %}
+                            <footer class="mo-kanban-task__meta">
+                                <span class="mo-kanban-task__label text-capitalize">{{ task.priority }}</span>
+                                {% if task.due_date %}
+                                <span><i class="far fa-calendar"></i> {{ task.due_date }}</span>
+                                {% endif %}
+                            </footer>
+                        </article>
+                        {% else %}
+                        <p class="text-muted small">{{ i18n.trans('mo-projects-no-tasks') }}</p>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="mo-tab-calendar" role="tabpanel">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    {{ forms.input('event_title', '', 'Título del evento') }}
+                </div>
+                <div class="col-md-3">
+                    {{ forms.datetime('event_start', '', 'Inicio') }}
+                </div>
+                <div class="col-md-3">
+                    {{ forms.datetime('event_end', '', 'Fin') }}
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-primary w-100" type="button" data-action="add-event">{{ i18n.trans('añadir') }}</button>
+                </div>
+            </div>
+            <div class="mt-4">
+                <h3 class="h6 text-uppercase text-muted">{{ i18n.trans('eventos') }}</h3>
+                <ul class="list-group list-group-flush">
+                    {% set events = view.model.getEvents is defined ? view.model.getEvents() : [] %}
+                    {% for event in events %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ event.title }}</strong>
+                            <div class="text-muted small">{{ event.start_at }}{% if event.end_at %} · {{ event.end_at }}{% endif %}</div>
+                        </div>
+                        {% if event.synced %}
+                        <span class="badge bg-success">{{ i18n.trans('sincronizado') }}</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">{{ i18n.trans('pendiente') }}</span>
+                        {% endif %}
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted">{{ i18n.trans('mo-projects-no-events') }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
