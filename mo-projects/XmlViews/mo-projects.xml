@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmlviews>
+    <view name="ListMoProjects" controller="MoProjects">
+        <template>mo-projects/list</template>
+    </view>
+    <view name="EditMoProject" controller="MoProjects">
+        <template>mo-projects/edit</template>
+    </view>
+</xmlviews>

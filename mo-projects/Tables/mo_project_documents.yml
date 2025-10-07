@@ -1,0 +1,38 @@
+table: mo_project_documents
+engine: InnoDB
+comment: Relación de documentos comerciales asociados a cada proyecto.
+columns:
+  - name: id
+    type: INT
+    unsigned: true
+    autoincrement: true
+    primary: true
+  - name: idproject
+    type: INT
+    unsigned: true
+    notnull: true
+  - name: doctype
+    type: ENUM
+    values: ['factura', 'albaran', 'presupuesto']
+    notnull: true
+  - name: iddocument
+    type: INT
+    unsigned: true
+    notnull: true
+  - name: summary
+    type: TEXT
+    null: true
+  - name: created_at
+    type: DATETIME
+    notnull: true
+    default: CURRENT_TIMESTAMP
+indexes:
+  - name: idx_mo_project_documents_project
+    type: index
+    columns: [idproject]
+foreign_keys:
+  - name: fk_mo_project_documents_project
+    columns: [idproject]
+    referenced_table: mo_projects
+    referenced_columns: [id]
+    on_delete: CASCADE

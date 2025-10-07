@@ -1,0 +1,66 @@
+table: mo_project_tasks
+engine: InnoDB
+comment: Tareas Kanban asociadas a proyectos.
+columns:
+  - name: id
+    type: INT
+    unsigned: true
+    autoincrement: true
+    primary: true
+  - name: idproject
+    type: INT
+    unsigned: true
+    notnull: true
+  - name: idstatus
+    type: INT
+    unsigned: true
+    notnull: true
+  - name: title
+    type: VARCHAR
+    length: 255
+    notnull: true
+  - name: description
+    type: TEXT
+    null: true
+  - name: assigned_to
+    type: INT
+    unsigned: true
+    null: true
+  - name: due_date
+    type: DATE
+    null: true
+  - name: priority
+    type: ENUM
+    values: ['low', 'normal', 'high']
+    notnull: true
+    default: normal
+  - name: position
+    type: INT
+    unsigned: true
+    notnull: true
+    default: 0
+  - name: created_at
+    type: DATETIME
+    notnull: true
+    default: CURRENT_TIMESTAMP
+  - name: updated_at
+    type: DATETIME
+    null: true
+indexes:
+  - name: idx_mo_project_tasks_project
+    type: index
+    columns: [idproject]
+  - name: idx_mo_project_tasks_status
+    type: index
+    columns: [idstatus]
+foreign_keys:
+  - name: fk_mo_project_tasks_project
+    columns: [idproject]
+    referenced_table: mo_projects
+    referenced_columns: [id]
+    on_delete: CASCADE
+  - name: fk_mo_project_tasks_status
+    columns: [idstatus]
+    referenced_table: mo_project_task_statuses
+    referenced_columns: [id]
+    on_delete: CASCADE
