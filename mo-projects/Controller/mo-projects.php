@@ -45,6 +45,8 @@ class MoProjects extends Controller
                 break;
             case 'EditMoProject':
                 $model = $view->getModel();
+                $view->assign('documents', []);
+                $view->assign('kanbanColumns', []);
                 if ($model instanceof MoProject && $model->id > 0) {
                     $view->assign('documents', MoProjectDocumentService::getInstance()->getProjectDocuments($model));
                     $view->assign('kanbanColumns', MoProjectKanbanService::getInstance()->getBoard($model->id));
@@ -75,6 +77,19 @@ class MoProjects extends Controller
 
     protected function loadData(string $viewName, array $params = []): void
     {
+        if ('ListMoProjects' === $viewName) {
+            $this->setTemplate('mo-projects/list');
+        }
+
+        if ('EditMoProject' === $viewName) {
+            $this->setTemplate('mo-projects/edit');
+
+            if (!empty($params['id'])) {
+                /** @var MoProject|null $project */
+                $project = $this->views[$viewName]->getModel();
+                if ($project instanceof MoProject) {
+                    $project->loadFromCode($params['id']);
+                }
         if ('EditMoProject' === $viewName && !empty($params['id'])) {
             /** @var MoProject|null $project */
             $project = $this->views[$viewName]->getModel();

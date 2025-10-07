@@ -1,0 +1,37 @@
+table: mo_project_task_statuses
+engine: InnoDB
+comment: Estados Kanban configurables por proyecto.
+columns:
+  - name: id
+    type: INT
+    unsigned: true
+    autoincrement: true
+    primary: true
+  - name: idproject
+    type: INT
+    unsigned: true
+    notnull: true
+  - name: name
+    type: VARCHAR
+    length: 100
+    notnull: true
+  - name: color
+    type: VARCHAR
+    length: 7
+    notnull: true
+    default: '#3b82f6'
+  - name: position
+    type: INT
+    unsigned: true
+    notnull: true
+    default: 0
+indexes:
+  - name: idx_mo_project_task_statuses_project
+    type: index
+    columns: [idproject]
+foreign_keys:
+  - name: fk_mo_project_task_statuses_project
+    columns: [idproject]
+    referenced_table: mo_projects
+    referenced_columns: [id]
+    on_delete: CASCADE

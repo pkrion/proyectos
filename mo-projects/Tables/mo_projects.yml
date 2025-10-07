@@ -1,0 +1,69 @@
+table: mo_projects
+engine: InnoDB
+comment: Tabla principal de proyectos gestionados por el plugin mo-projects.
+columns:
+  - name: id
+    type: INT
+    unsigned: true
+    autoincrement: true
+    primary: true
+  - name: code
+    type: VARCHAR
+    length: 32
+    notnull: true
+    unique: true
+    comment: Código interno del proyecto.
+  - name: name
+    type: VARCHAR
+    length: 255
+    notnull: true
+    comment: Nombre descriptivo del proyecto.
+  - name: idclient
+    type: INT
+    unsigned: true
+    null: true
+    comment: Cliente vinculado al proyecto.
+  - name: idcompany
+    type: INT
+    unsigned: true
+    notnull: true
+    comment: Empresa propietaria del proyecto.
+  - name: status
+    type: VARCHAR
+    length: 32
+    notnull: true
+    default: activo
+  - name: startdate
+    type: DATE
+    null: true
+  - name: enddate
+    type: DATE
+    null: true
+  - name: description
+    type: TEXT
+    null: true
+  - name: drive_folder_url
+    type: VARCHAR
+    length: 255
+    null: true
+  - name: calendar_id
+    type: VARCHAR
+    length: 128
+    null: true
+  - name: created_at
+    type: DATETIME
+    notnull: true
+    default: CURRENT_TIMESTAMP
+  - name: updated_at
+    type: DATETIME
+    null: true
+indexes:
+  - name: idx_mo_projects_code
+    type: unique
+    columns: [code]
+foreign_keys:
+  - name: fk_mo_projects_clients
+    columns: [idclient]
+    referenced_table: clientes
+    referenced_columns: [idcliente]
+    on_delete: SET NULL

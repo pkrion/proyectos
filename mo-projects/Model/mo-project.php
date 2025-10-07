@@ -2,6 +2,7 @@
 
 namespace FacturaScripts\Plugins\MoProjects\Model;
 
+use FacturaScripts\Core\Model\Cliente;
 use FacturaScripts\Core\Tools;
 use FacturaScripts\Core\Where;
 
@@ -113,5 +114,15 @@ SQL;
     public function getEvents(): array
     {
         return MoProjectEvent::all([Where::eq('idproject', $this->id)], ['start_at' => 'DESC']);
+    }
+
+    public function getCustomerName(): string
+    {
+        if (empty($this->idclient)) {
+            return '';
+        }
+
+        $cliente = new Cliente();
+        return $cliente->load($this->idclient) ? $cliente->nombre : '';
     }
 }
