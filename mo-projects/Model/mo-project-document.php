@@ -36,4 +36,18 @@ class MoProjectDocument extends MoModel
         return parent::test();
     }
 
+    public function install(): string
+    {
+        return <<<SQL
+CREATE TABLE `mo_project_documents` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `idproject` INT UNSIGNED NOT NULL,
+    `doctype` ENUM('factura','albaran','presupuesto') NOT NULL,
+    `iddocument` INT UNSIGNED NOT NULL,
+    `summary` TEXT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT `fk_mo_project_documents_project` FOREIGN KEY (`idproject`) REFERENCES `mo_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SQL;
+    }
 }

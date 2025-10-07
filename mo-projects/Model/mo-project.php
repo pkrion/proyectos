@@ -69,6 +69,28 @@ class MoProject extends MoModel
         return true;
     }
 
+    public function install(): string
+    {
+        return <<<SQL
+CREATE TABLE `mo_projects` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `code` VARCHAR(32) NOT NULL UNIQUE,
+    `name` VARCHAR(255) NOT NULL,
+    `idclient` INT UNSIGNED NULL,
+    `idcompany` INT UNSIGNED NOT NULL,
+    `status` VARCHAR(32) NOT NULL DEFAULT 'activo',
+    `startdate` DATE NULL,
+    `enddate` DATE NULL,
+    `description` TEXT NULL,
+    `drive_folder_url` VARCHAR(255) NULL,
+    `calendar_id` VARCHAR(128) NULL,
+    `created_at` DATETIME NOT NULL,
+    `updated_at` DATETIME NULL,
+    CONSTRAINT `fk_mo_projects_clients` FOREIGN KEY (`idclient`) REFERENCES `clientes` (`idcliente`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SQL;
+    }
+
     public function getCredentials(): array
     {
         return MoProjectCredential::all([Where::eq('idproject', $this->id)]);

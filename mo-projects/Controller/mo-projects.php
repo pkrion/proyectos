@@ -90,6 +90,12 @@ class MoProjects extends Controller
                 if ($project instanceof MoProject) {
                     $project->loadFromCode($params['id']);
                 }
+        if ('EditMoProject' === $viewName && !empty($params['id'])) {
+            /** @var MoProject|null $project */
+            $project = $this->views[$viewName]->getModel();
+            if ($project instanceof MoProject && $project->loadFromCode($params['id'])) {
+                $this->setTemplate('mo-projects/edit');
+                return;
             }
         }
 
