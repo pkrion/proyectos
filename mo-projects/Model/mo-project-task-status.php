@@ -40,6 +40,20 @@ class MoProjectTaskStatus extends MoModel
         return true;
     }
 
+    public function install(): string
+    {
+        return <<<SQL
+CREATE TABLE `mo_project_task_statuses` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `idproject` INT UNSIGNED NOT NULL,
+    `name` VARCHAR(100) NOT NULL,
+    `color` VARCHAR(7) NOT NULL DEFAULT '#3b82f6',
+    `position` INT UNSIGNED NOT NULL DEFAULT 0,
+    CONSTRAINT `fk_mo_project_task_statuses_project` FOREIGN KEY (`idproject`) REFERENCES `mo_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SQL;
+    }
+
     public static function getDefaultColumns(int $idproject): array
     {
         $columns = self::all([Where::eq('idproject', $idproject)], ['position' => 'ASC']);

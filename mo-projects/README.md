@@ -17,6 +17,7 @@ Plugin de gestión de proyectos para FacturaScripts con integración de clientes
 - `Model/`: Modelos persistentes (`mo-project`, `mo-project-task`, etc.) que crean automáticamente sus tablas (`mo_…`).
 - `Service/`: Servicios de dominio para documentos, tablero Kanban y sincronización con Google Calendar.
 - `Tables/`: Definiciones YAML de las tablas `mo_…` que utiliza el plugin. Se instalan automáticamente al activar el plugin.
+- `SQL/install.sql`: Script inicial de creación de tablas para instalaciones manuales.
 - `Assets/`: Recursos CSS y JavaScript para credenciales y tablero Kanban.
 - `Resources/views/`: Plantillas Twig para la interfaz de proyectos.
 
@@ -47,6 +48,7 @@ El servicio `MoProjectDocumentService` permite vincular facturas, albaranes y pr
 1. Copie la carpeta `mo-projects` dentro de `FacturaScripts/Plugins/`.
 2. Active el plugin desde la administración de FacturaScripts.
 3. Ejecute las migraciones para crear las tablas `mo_…` desde el panel de administración.
+3. Ejecute las migraciones para crear las tablas `mo_…` o importe `SQL/install.sql`.
 
 ## Licencia
 

@@ -50,6 +50,24 @@ class MoProjectCredential extends MoModel
         return true;
     }
 
+    public function install(): string
+    {
+        return <<<SQL
+CREATE TABLE `mo_project_credentials` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `idproject` INT UNSIGNED NOT NULL,
+    `title` VARCHAR(100) NOT NULL,
+    `username` VARCHAR(100) NULL,
+    `password` VARCHAR(100) NULL,
+    `notes` TEXT NULL,
+    `is_sensitive` TINYINT(1) NOT NULL DEFAULT 0,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NULL,
+    CONSTRAINT `fk_mo_project_credentials_project` FOREIGN KEY (`idproject`) REFERENCES `mo_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SQL;
+    }
+
     public function getProject(): ?MoProject
     {
         $project = new MoProject();

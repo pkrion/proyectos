@@ -52,6 +52,26 @@ class MoProjectTask extends MoModel
         return true;
     }
 
+    public function install(): string
+    {
+        return <<<SQL
+CREATE TABLE `mo_project_tasks` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `idproject` INT UNSIGNED NOT NULL,
+    `idstatus` INT UNSIGNED NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `description` TEXT NULL,
+    `assigned_to` INT UNSIGNED NULL,
+    `due_date` DATE NULL,
+    `priority` ENUM('low','normal','high') NOT NULL DEFAULT 'normal',
+    `position` INT UNSIGNED NOT NULL DEFAULT 0,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NULL,
+    CONSTRAINT `fk_mo_project_tasks_project` FOREIGN KEY (`idproject`) REFERENCES `mo_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SQL;
+    }
+
     public static function byProject(int $idproject): array
     {
         return self::all([Where::eq('idproject', $idproject)], ['position' => 'ASC']);

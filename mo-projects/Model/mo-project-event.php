@@ -39,4 +39,21 @@ class MoProjectEvent extends MoModel
         return parent::test();
     }
 
+    public function install(): string
+    {
+        return <<<SQL
+CREATE TABLE `mo_project_events` (
+    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    `idproject` INT UNSIGNED NOT NULL,
+    `calendar_event_id` VARCHAR(128) NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `start_at` DATETIME NOT NULL,
+    `end_at` DATETIME NULL,
+    `location` VARCHAR(255) NULL,
+    `notes` TEXT NULL,
+    `synced` TINYINT(1) NOT NULL DEFAULT 0,
+    CONSTRAINT `fk_mo_project_events_project` FOREIGN KEY (`idproject`) REFERENCES `mo_projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+SQL;
+    }
 }
